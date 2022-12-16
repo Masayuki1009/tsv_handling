@@ -12,18 +12,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class TsvHandlingApplication {
-	
-public static void main(String[] args) {
-		
+
+	public static void main(String[] args) {
+		// runはボタンでするから不要?
+		SpringApplication.run(TsvHandlingApplication.class, args);
+
 		// tsvファイルのpathを指定
-		String filePath = "/Users/shibatamasayuki/DeskTop/train.tsv";
-		List<String> tsvDataList = new ArrayList<>();
+		String filePath = "/Users/shibatamasayuki/業務/大量データ課題/train.tsv";
+		List<String> tsvDataList = new ArrayList<>(); 
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filePath));
 			String line;
-			
-			
-			for(int i = 0; i <= 2; i++) {
+
+			for (int i = 0; i <= 2; i++) {
 				line = br.readLine();
 				System.out.println("line : " + line);
 			}
@@ -39,7 +40,7 @@ public static void main(String[] args) {
 //					System.out.println("lineのlength : " + line.length());
 //				}
 //			}
-			
+
 			br.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -48,7 +49,8 @@ public static void main(String[] args) {
 
 			e.printStackTrace();
 		}
-		SpringApplication.run(TsvHandlingApplication.class, args);
+		
+
 	}
 //	public static void main(String[] args) {
 //		SpringApplication.run(TsvHandlingApplication.class, args);
