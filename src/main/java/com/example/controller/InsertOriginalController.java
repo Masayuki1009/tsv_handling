@@ -19,12 +19,12 @@ import com.example.repository.OriginalRepository;
  */
 @Controller
 @RequestMapping("/original")
-public class InsertController {
+public class InsertOriginalController {
 	@Autowired
 	private OriginalRepository repository;
 
 	@Autowired
-	private InsertCategoryController insertCategoryController;
+	private InsertCategoryAndItemsController insertCategoryAndItemsController;
 
 	/**
 	 * @return 完了画面
@@ -86,17 +86,17 @@ public class InsertController {
 				}
 				repository.insert(original);
 				
-				//カテゴリーが記載なしの分を除き、categoryNameをcategoryControllerに渡し、category Tableへの追加を行う.
+				//カテゴリーが記載なしの分を除き、originalをcategoryControllerに渡し、category Tableへの追加を行う.
+				//insertCategoryAndItemsControllerでitems tableへのinsertを行うので、originalで渡す.
 				if (categoryName.length() > 0) {
-					insertCategoryController.insertCategory(categoryName);
+					insertCategoryAndItemsController.insertCategory(original);
 				}
 			}
 			
-			//tsvファイルから全ての内容を読み込んだあと、BufferedReaderをcloseさせる
+			//tsvファイルから全ての内容を読み込んだあと、BufferedReaderをcloseする
 			br.close();
 			System.out.println("Data has been inserted successfully.");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "result";

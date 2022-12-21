@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.example.domain.Category;
 
 /**
- * Categoryテーブルに追加するRepository.
+ * CategoryテーブルへのDbアクセスを行うRepository.
  * 
  * @author shibatamasayuki
  *
@@ -26,8 +26,9 @@ public class CategoryRepository {
 	@Autowired
 	private NamedParameterJdbcTemplate template;
 
-	/** 
+	/**
 	 * category tableへの追加を行う.
+	 * 
 	 * @param category category
 	 */
 	public void insert(Category category) {
@@ -54,12 +55,28 @@ public class CategoryRepository {
 	 * 引数の中カテゴリー名と大カテゴリーのidを持つcategory(＝ 一意の、中カテゴリー)のidを取得する.
 	 * 
 	 * @param mediumCategory 中カテゴリー名
-	 * @param bigCategoryId 大カテゴリーのid
+	 * @param bigCategoryId  大カテゴリーのid
 	 * @return 中カテゴリーのid
 	 */
 	public Integer findMediumCategoryIdByName(String mediumCategory, Integer bigCategoryId) {
 		String sql = "SELECT id, parent, name, name_all FROM category WHERE name = :name AND parent = :parent AND name_all IS NULL";
-		SqlParameterSource param = new MapSqlParameterSource().addValue("name", mediumCategory).addValue("parent", bigCategoryId);
+		SqlParameterSource param = new MapSqlParameterSource().addValue("name", mediumCategory).addValue("parent",
+				bigCategoryId);
+		Category category = template.queryForObject(sql, param, CATEGORY_ROW_MAPPER);
+		return category.getId();
+	}
+
+	/**
+	 * 引数の小カテゴリー名と中カテゴリーのidを持つcategory(＝ 一意の、小カテゴリー)のidを取得する.
+	 * 
+	 * @param smallCategory    小カテゴリー名
+	 * @param mediumCategoryId 中カテゴリーのid
+	 * @return 小カテゴリーのid
+	 */
+	public Integer findSmallCategoryIdByName(String smallCategory, Integer mediumCategoryId) {
+		String sql = "SELECT id, parent, name, name_all FROM category WHERE name = :name AND parent = :parent;";
+		SqlParameterSource param = new MapSqlParameterSource().addValue("name", smallCategory).addValue("parent",
+				mediumCategoryId);
 		Category category = template.queryForObject(sql, param, CATEGORY_ROW_MAPPER);
 		return category.getId();
 	}
