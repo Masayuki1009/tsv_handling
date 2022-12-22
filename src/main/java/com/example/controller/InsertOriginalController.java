@@ -49,7 +49,14 @@ public class InsertOriginalController {
 				String id = data[0];
 				String name = data[1];
 				String conditionId = data[2];
-				String categoryName = data[3];
+//				String categoryName = data[3];
+				try {
+					String categoryName = data[3];
+					original.setCategoryName(categoryName);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					String categoryName = "";
+					original.setDescription(categoryName);
+				}
 				String brand = data[4];
 				String price = data[5];
 				String shipping = data[6];
@@ -74,7 +81,7 @@ public class InsertOriginalController {
 					} else if (j == 3) {
 						original.setConditionId(Integer.parseInt(conditionId));
 					} else if (j == 4) {
-						original.setCategoryName(categoryName);
+//						original.setCategoryName(categoryName);
 					} else if (j == 5) {
 						original.setBrand(brand);
 					} else if (j == 6) {
@@ -85,12 +92,9 @@ public class InsertOriginalController {
 					j++;
 				}
 				repository.insert(original);
-				
-				//カテゴリーが記載なしの分を除き、originalをcategoryControllerに渡し、category Tableへの追加を行う.
-				//insertCategoryAndItemsControllerでitems tableへのinsertを行うので、originalで渡す.
-				if (categoryName.length() > 0) {
+					//originalはそのまま渡し、categoryとitemsテーブルの追加を行う
 					insertCategoryAndItemsController.insertCategory(original);
-				}
+
 			}
 			
 			//tsvファイルから全ての内容を読み込んだあと、BufferedReaderをcloseする
