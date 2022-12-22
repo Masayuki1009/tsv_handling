@@ -37,10 +37,27 @@ public class InsertCategoryAndItemsController {
 	// 中カテゴリーとcount(null=DB未追加 1=DB追加済み)を含んだHashMap
 	Map<String, Integer> smallCategoryCountMap = new HashMap<>();
 
+	/*
+	 * itemsテーブルとcategoryテーブルに追加を行う.
+	 * categoryが空=itemsテーブルに追加を行い終了　
+	 * categoryが存在する=categoryテーブルとitemsテーブルに追加を行う
+	 * 
+	 * @param original original
+	 */
 	@GetMapping("")
 	public void insertCategory(Original original) {
 		String categoryName = original.getCategoryName();
-
+		//categoryが空のレコードの文を、itemsテーブルに追加する.
+		if(categoryName.length() < 1) {
+			items.setName(original.getName());
+			items.setCondition(original.getConditionId());
+			items.setCategory(null);
+			items.setBrand(original.getBrand());
+			items.setPrice(original.getPrice());
+			items.setShipping(original.getShipping());
+			items.setDescription(original.getDescription());
+			itemsRepository.insert(items);
+		} else {
 		// e.g. ["Men", "Clothes", "Jeans"]
 		String[] categoryData = categoryName.split("/", 0);
 		// e.g. "Men"
@@ -89,23 +106,24 @@ public class InsertCategoryAndItemsController {
 			category.setNameAll(smallCategory);
 			// 小カテゴリーを追加する
 			categoryRepository.insert(category);
-
-			// 追加したばかりの小カテゴリーのidを取得
-			Integer parentId = categoryRepository.findSmallCategoryIdByName(categoryData[2],
-					mediumCategoryCountMap.get(mediumCategory));
 			smallCategoryCountMap.put(smallCategory, count);
 
-			// items Domainに各データをset、itemsテーブルに追加
-			items.setName(original.getName());
-			items.setCondition(original.getConditionId());
-			items.setCategory(parentId);
-			items.setBrand(original.getBrand());
-			items.setPrice(original.getPrice());
-			items.setShipping(original.getShipping());
-			items.setDescription(original.getDescription());
-			itemsRepository.insert(items);
+
 
 		}
-
+		// 小カテゴリーのidを取得
+		Integer smallCategoryId = categoryRepository.findSmallCategoryIdByName(categoryData[2],
+							mediumCategoryCountMap.get(mediumCategory));
+		
+		// items Domainに各データをset、itemsテーブルに追加
+		items.setName(original.getName());
+		items.setCondition(original.getConditionId());
+		items.setCategory(smallCategoryId);
+		items.setBrand(original.getBrand());
+		items.setPrice(original.getPrice());
+		items.setShipping(original.getShipping());
+		items.setDescription(original.getDescription());
+		itemsRepository.insert(items);
+		}
 	}
 }
